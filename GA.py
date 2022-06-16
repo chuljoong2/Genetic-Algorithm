@@ -175,3 +175,28 @@ def crossover(p):
 crossover_population = crossover(selected_population)
 print_scatterplot(crossover_population)
 print(crossover_population)
+
+
+# 돌연변이 연산
+def mutation(p):
+    mutated_p = []
+    for i in range(population_length):
+        random_percentage = random.random()
+        # 돌연변이가 일어날 확률 1%
+        if random_percentage > 0.975:
+            mutated_p.append([p[i][0], p[i][1]-0.5])
+        elif random_percentage > 0.95:
+            mutated_p.append([p[i][0], p[i][1]+0.5])
+        elif random_percentage > 0.925:
+            mutated_p.append([p[i][0]-0.1, p[i][1]])
+        elif random_percentage > 0.9:
+            mutated_p.append([p[i][0]+0.1, p[i][1]])
+        else:
+            mutated_p.append([p[i][0], p[i][1]])
+
+    return mutated_p
+
+
+mutated_population = mutation(crossover_population)
+print_scatterplot(mutated_population)
+print(mutated_population)
