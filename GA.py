@@ -149,7 +149,7 @@ def selection(p):
         random_percentage = random.random()
         for i in range(population_length):
             if random_percentage < percenatages[i]:
-                selected_p.append(population[i])
+                selected_p.append(p[i])
                 break
 
     return selected_p
@@ -158,3 +158,20 @@ def selection(p):
 selected_population = selection(population)
 print_scatterplot(selected_population)
 print(selected_population)
+
+
+# 교차 연산
+def crossover(p):
+    crossover_p = []
+    p.sort()  # 같은 직선끼리 교차할 확률을 줄이기 위함
+    for i in range(population_length//2):
+        crossover_p.append([(p[i][0] + p[i + population_length // 2][0])/2,
+                            (p[i][1] + p[i + population_length // 2][1])/2])
+        crossover_p.append([(p[i][0] + p[-1-i][0])/2, (p[i][1] + p[-1-i][1])/2])
+
+    return crossover_p
+
+
+crossover_population = crossover(selected_population)
+print_scatterplot(crossover_population)
+print(crossover_population)
