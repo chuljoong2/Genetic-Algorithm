@@ -88,3 +88,73 @@ def init_population():
 population = init_population()
 print_scatterplot(population)
 print(population)
+
+
+#  평균 제곱 오차 구하기
+def get_mean_squared_errores(p):
+    mean_squared_errores = []
+    for i in range(population_length):
+        w = p[i][0]  # 기울기
+        b = p[i][1]  # y 절편
+
+        sum_squared_error = 0
+        for score in scores:
+            rs, ws = score[0], score[1]  # reading_score, writing_score
+
+            predicted_ws = w * rs + b
+            squared_error = (ws - predicted_ws) ** 2  # (실제값 - 예측값)의 제곱
+            sum_squared_error += squared_error
+
+        mean_squared_error = sum_squared_error / total_scores_length  # 평균 제곱 오차
+        mean_squared_errores.append(mean_squared_error)
+
+    return mean_squared_errores
+
+
+# 적합도 구하기
+def get_fittnesses(msnes):
+    fittnesses = []
+    sum_msnes = sum(msnes)
+
+    # 평균 제곱 오차가 낮을 수록 적합도가 높기 때문에
+    # (1 - 평균 제곱 오차 비율)을 통해서 평균 제곱 오차가 낮을 수록 적합도를 높게 설정
+    for msn in msnes:
+        fittnesses.append(1-msn/sum_msnes)
+
+    return fittnesses
+
+
+# 룰렛 휠에 사용될 누적 확률 리스트 만들기
+def get_percentages(fits):
+    percenatages = []
+    sum_fits = sum(fits)
+    for fit in fits:
+        if len(percenatages) == 0:
+            percenatages.append(fit / sum_fits)  # idx == 0, 누적할 확률이 없음
+        else:
+            percenatages.append(percenatages[-1] + fit / sum_fits)  # idx != 0, 이전 확률과 더해서 저장
+
+    return percenatages
+
+
+# 선택 연산
+def selection(p):
+    selected_p = []
+    mean_squared_errores = get_mean_squared_errores(p)
+    fittnesses = get_fittnesses(mean_squared_errores)
+    percenatages = get_percentages(fittnesses)
+
+    # 룰렛 휠 방식
+    for _ in range(population_length):
+        random_percentage = random.random()
+        for i in range(population_length):
+            if random_percentage < percenatages[i]:
+                selected_p.append(population[i])
+                break
+
+    return selected_p
+
+
+selected_population = selection(population)
+print_scatterplot(selected_population)
+print(selected_population)
