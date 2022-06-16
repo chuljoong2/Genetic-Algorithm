@@ -43,4 +43,13 @@ def print_scatterplot(population=None):
 
 print_scatterplot()
 
+#  데이터를 좌표로 전환 후 리스트에 저장하기
+scores = []
+for i in df.index:
+    reading_score = df['reading_score'][i]
+    writing_score = df['writing_score'][i]
+    scores.append([reading_score, writing_score])
 
+total_scores_length = len(scores)
+print(total_scores_length)
+print(scores)
