@@ -45,20 +45,6 @@ def print_scatterplot(p=None):
     plt.show()
 
 
-print_scatterplot()
-
-#  점수 데이터를 리스트에 저장
-scores = []
-for row in df.index:
-    reading_score = df['reading_score'][row]
-    writing_score = df['writing_score'][row]
-    scores.append([reading_score, writing_score])
-
-total_scores_length = len(scores)
-print(total_scores_length)
-print(scores)
-
-
 #  초기 세대 생성
 population_length = 30  # 모집단의 수
 
@@ -83,11 +69,6 @@ def init_population():
         p.append([gradient, intercept])
 
     return p
-
-
-population = init_population()
-print_scatterplot(population)
-print(population)
 
 
 #  평균 제곱 오차 구하기
@@ -155,11 +136,6 @@ def selection(p):
     return selected_p
 
 
-selected_population = selection(population)
-print_scatterplot(selected_population)
-print(selected_population)
-
-
 # 교차 연산
 def crossover(p):
     crossover_p = []
@@ -170,11 +146,6 @@ def crossover(p):
         crossover_p.append([(p[i][0] + p[-1-i][0])/2, (p[i][1] + p[-1-i][1])/2])
 
     return crossover_p
-
-
-crossover_population = crossover(selected_population)
-print_scatterplot(crossover_population)
-print(crossover_population)
 
 
 # 돌연변이 연산
@@ -197,6 +168,25 @@ def mutation(p):
     return mutated_p
 
 
-mutated_population = mutation(crossover_population)
-print_scatterplot(mutated_population)
-print(mutated_population)
+print_scatterplot()
+
+#  점수 데이터를 리스트에 저장
+scores = []
+for row in df.index:
+    reading_score = df['reading_score'][row]
+    writing_score = df['writing_score'][row]
+    scores.append([reading_score, writing_score])
+
+total_scores_length = len(scores)
+
+
+population = init_population()
+print_scatterplot(population)
+
+while generation < 100:
+    generation += 1
+    selected_population = selection(population)
+    crossover_population = crossover(selected_population)
+    mutated_population = mutation(crossover_population)
+    population = mutated_population
+    print_scatterplot(population)
