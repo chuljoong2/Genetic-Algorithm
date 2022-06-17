@@ -84,14 +84,14 @@ def init_population():
 #  평균 제곱 오차 구하기
 def get_mean_squared_errores(p):
     mean_squared_errores = []
-    for i in range(population_length):
+    for i in range(len(p)):
         w = p[i][0]  # 기울기
         b = p[i][1]  # y절편
 
         sum_squared_error = 0
         for reading_score, writing_score in scores:
-            p_ws = w * reading_score + b  # 예측값
-            squared_error = (writing_score - p_ws) ** 2  # 오차의 제곱
+            predicted_ws = w * reading_score + b  # 예측값
+            squared_error = (writing_score - predicted_ws) ** 2  # 오차의 제곱
             sum_squared_error += squared_error
 
         # 평균 제곱 오차
@@ -170,7 +170,7 @@ def mutation(p):
     for i in range(population_length):
         random_percentage = random.random()
         # 돌연변이가 일어날 확률 1%
-        if random_percentage > 0.995:
+        if random_percentage > 0.997:
             mutated_p.append([p[i][0]+0.05, p[i][1]-0.])
         elif random_percentage > 0.990:
             mutated_p.append([p[i][0]-0.05, p[i][1]+0.1])
@@ -196,6 +196,7 @@ print_scatterplot(population)
 
 
 result = []  # 평균 MSE 리스트
+est_gradient, est_intercept = 0, 0  # 추정된 회귀식 기울기와 y절편
 
 # 종료 조건 판별
 while generation < 10:
@@ -223,3 +224,37 @@ while generation < 10:
     print_scatterplot(population)
 
 
+# 라이브러리로 얻은 최적의 회귀식 MSE 구하기
+opt_mse = get_mean_squared_errores([[regression_gradient,
+                                     regression_intercept]]).pop()
+
+# 추정된 회귀식과 최적의 회귀식 비교
+figure = plt.figure(figsize=(8, 8))
+figure.set_facecolor('white')
+
+font_size = 15
+plt.title("AVG MSE change compared OPT", fontsize=font_size)
+
+for v in range(len(result)):
+    if result[v][1] > 60:
+        plt.scatter(result[v][0], 59)
+        plt.text(result[v][0], 57, f"{int(result[v][1])}")
+    else:
+        plt.scatter(result[v][0], result[v][1])
+
+plt.hlines(opt_mse, 0, generation, color='red', linestyle='solid', linewidth=2)
+plt.xlabel('generaion', fontsize=font_size)
+plt.ylabel('MSE', fontsize=font_size)
+plt.xlim([0, generation])
+plt.ylim([0, 60])
+
+plt.show()
+
+# 추정된 회귀식과 최적의 회귀식 그래프
+print_scatterplot(est=[est_gradient, est_intercept])
+
+# 추정된 회귀식과 최적의 회귀식
+print("📌 추정된 회귀식")
+print(f"y = {est_gradient} * x + {est_intercept}")
+print("📌 최적의 회귀식")
+print(f"y = {regression_gradient} * x + {regression_intercept}")
